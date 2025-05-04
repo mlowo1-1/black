@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+    <div id="box">
+        <section id="app">
+            <header class="header">
+                <h1>小黑记事本</h1>
+                <input placeholder="请输入任务" class="new-todo" v-model="inpSport" />
+                <button class="add" v-on:click="add">添加任务</button>
+            </header>
+            <section class="main">
+                <ul class="todo-list">
+                    <li class="todo" v-for="(item,index) in list" v-bind:key="item.id">
+                        <div class="view">
+                            <span class="index">{{index+1}}.</span> <label>{{item.name}}</label>
+                            <button v-on:click="del(item.id)" class="destroy"></button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+            <footer class="footer" v-show="list.length>0">
+                <span class="todo-count">合 计:<strong>{{list.length}}</strong></span>
+                <button class="clear-completed" v-on:click="clear">
+                    清空任务
+                </button>
+            </footer>
+        </section>
+
+    </div>
+    <script src="./js/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                list: [{
+                    id: 1001,
+                    name: "跑步锻炼20分钟"
+                }, {
+                    id: 1578,
+                    name: "打羽毛球30分钟"
+                }, {
+                    id: 5689,
+                    name: "打篮球40分钟"
+                }, {
+                    id: 4386,
+                    name: "游泳1个小时"
+                }]
+            },
+            methods: {
+                del(xuhao) {
+                    console.log("用户点击了删除按钮，想要删除这个活动", xuhao);
+                    this.list = this.list.filter((item) => {
+                        return item.id !== xuhao;
+                    })
+					// 删除任务后保存任务列表到本地存储
+					localStorage.setItem('taskList', JSON.stringify(this.list));
+                },
+                add(){
+                    console.log("用户想要添加一条数据",this.inpSport);
+                    if(this.inpSport.trim()==""){
+                        alert("请输入具体的活动名称");
+                        return;
+                    }
+                    this.list.unshift(
+                        {id:+new Date(),name:this.inpSport}
+                    )
+                    this.inpSport="";
+					// 保存任务列表到本地存储
+					localStorage.setItem('taskList', JSON.stringify(this.list));
+                },
+                clear(){
+                    console.log("用户点击了清空数据按钮");
+                    this.list=[];
+					// 清空任务后保存任务列表到本地存储
+					localStorage.setItem('taskList', JSON.stringify(this.list));
+                }
+            },
+				created() {
+					const savedList = localStorage.getItem('taskList');
+					if (savedList) {
+						this.list = JSON.parse(savedList);
+					}
+				}
+        });
+    </script>
+</body>
+
+</html>
